@@ -1,16 +1,10 @@
-export function TableHeader({ columns, setSelectedRange, setActiveCell }) {
+export function TableHeader({ columns, setActiveCell }) {
   return columns.map((column, colIndex) => (
     <div
       className="header"
       key={colIndex}
       onClick={() => {
         setActiveCell(null);
-        setSelectedRange({
-          startRow: 0,
-          startColumn: colIndex,
-          endRow: Infinity,
-          endColumn: colIndex,
-        });
       }}
       onContextMenu={(e) => {
         e.preventDefault();
