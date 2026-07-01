@@ -1,18 +1,17 @@
-import { useRef, useState } from "react";
+import { useState, useRef } from "react";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
 import "./TableWidget.css";
 import type { Row, IndexCell, SelectedRange } from "./types";
 
 export default function TableWidget(props) {
-  const isSelecting = useRef<Boolean>(false);
-  const [editingCell, setEditingCell] = useState<IndexCell | null>(null);
-
+  // console.log("               ");
   const [activeCell, setActiveCell] = useState<IndexCell | null>(null);
-
   const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(
     null
   );
+
+  const isSelecting = useRef<Boolean>(false);
 
   const [rows, setRows] = useState<Row[]>(props.rows);
 
@@ -23,18 +22,16 @@ export default function TableWidget(props) {
     >
       <TableHeader
         columns={props.columns}
-        setSelectedRange={setSelectedRange}
         setActiveCell={setActiveCell}
+        setSelectedRange={setSelectedRange}
       />
       <TableBody
         columns={props.columns}
         rows={rows}
         setRows={setRows}
-        isSelecting={isSelecting}
         activeCell={activeCell}
         setActiveCell={setActiveCell}
-        editingCell={editingCell}
-        setEditingCell={setEditingCell}
+        isSelecting={isSelecting}
         selectedRange={selectedRange}
         setSelectedRange={setSelectedRange}
       />

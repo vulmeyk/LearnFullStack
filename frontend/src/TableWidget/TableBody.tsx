@@ -1,19 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { TableCell } from "./TableCell";
+import type { IndexCell } from "./types";
 
 export function TableBody({
   columns,
   rows,
   setRows,
-  isSelecting,
   activeCell,
   setActiveCell,
-  editingCell,
-  setEditingCell,
+  isSelecting,
   selectedRange,
   setSelectedRange,
 }) {
+  // console.log("render body");
+  const [editCell, setEditCell] = useState<IndexCell | null>(null);
+
   useEffect(() => {
+    // console.log("check mouse");
     const handleMouseUp = () => {
       isSelecting.current = false;
     };
@@ -26,9 +29,17 @@ export function TableBody({
   }, []);
 
   useEffect(() => {
-    console.log("  Следим за activeCell");
+    // console.log("check activeCell and editCell");
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!activeCell) return;
+
+      setSelectedRange(null);
+
+      if (!editCell && e.key.length == 1) {
+        // console.log("started input");
+        setEditCell(activeCell);
+        return;
+      }
 
       switch (e.key) {
         case "ArrowUp":
@@ -36,13 +47,14 @@ export function TableBody({
             ...prev,
             rowIndex: Math.max(0, prev.rowIndex - 1),
           }));
+          setEditCell(null);
           break;
-        // case ["ArrowDown", "Enter"]:
         case "ArrowDown":
           setActiveCell((prev) => ({
             ...prev,
-            rowIndex: prev.rowIndex + 1,
+            rowIndex: Math.min(rows.length - 1, prev.rowIndex + 1),
           }));
+          setEditCell(null);
           break;
 
         case "ArrowLeft":
@@ -50,78 +62,57 @@ export function TableBody({
             ...prev,
             colIndex: Math.max(0, prev.colIndex - 1),
           }));
+          setEditCell(null);
           break;
 
         case "ArrowRight":
           setActiveCell((prev) => ({
             ...prev,
-            colIndex: prev.colIndex + 1,
+            colIndex: Math.min(columns.length - 1, prev.colIndex + 1),
           }));
+          setEditCell(null);
           break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeCell]);
+  }, [activeCell, editCell]);
 
   const returnStatus = (rowIndex, colIndex, isvalid) => {
-    if (
-      editingCell?.rowIndex === rowIndex &&
-      editingCell?.colIndex === colIndex
-    )
+    if (editCell?.rowIndex === rowIndex && editCell?.colIndex === colIndex)
       return "edit";
 
     if (activeCell?.rowIndex === rowIndex && activeCell?.colIndex === colIndex)
       return "active";
 
-    if (selectedRange) {
-      const minRowIndex = Math.min(
-        selectedRange.startRow,
-        selectedRange.endRow
-      );
-      const maxRowIndex = Math.max(
-        selectedRange.startRow,
-        selectedRange.endRow
-      );
-      const minColIndex = Math.min(
-        selectedRange.startColumn,
-        selectedRange.endColumn
-      );
-      const maxColIndex = Math.max(
-        selectedRange.startColumn,
-        selectedRange.endColumn
-      );
-      if (
-        minRowIndex <= rowIndex &&
-        maxRowIndex >= rowIndex &&
-        minColIndex <= colIndex &&
-        maxColIndex >= colIndex
-      )
-        return "selected";
-    }
+    if (
+      selectedRange?.startRowIndex <= rowIndex &&
+      selectedRange?.endRowIndex >= rowIndex &&
+      selectedRange?.startColIndex <= colIndex &&
+      selectedRange?.endColIndex >= colIndex
+    )
+      return "selected";
 
     if (!isvalid) return "error";
     return "";
   };
-  console.log(" Проходим по ячейкам");
 
   return rows.map((row, rowIndex) =>
     row.values.map((value, colIndex) => {
       const status = returnStatus(rowIndex, colIndex, row.valids[colIndex]);
       return TableCell(
-        rows,
-        setRows,
-        columns,
+        value,
         rowIndex,
         colIndex,
-        value,
         status,
         activeCell,
         setActiveCell,
-        setEditingCell,
-        setSelectedRange,
-        isSelecting
+        setEditCell,
+        rows,
+        setRows,
+        isSelecting,
+        setSelectedRange
       );
     })
   );
