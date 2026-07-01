@@ -62,10 +62,10 @@ export function TableCell(
           onMouseEnter={() => {
             if (!isSelecting.current) return;
             setSelectedRange(() => ({
-              startRowIndex: activeCell.rowIndex,
-              startColIndex: activeCell.colIndex,
-              endRowIndex: rowIndex,
-              endColIndex: colIndex,
+              startRowIndex: Math.min(rowIndex, activeCell.rowIndex),
+              startColIndex: Math.min(colIndex, activeCell.colIndex),
+              endRowIndex: Math.max(rowIndex, activeCell.rowIndex),
+              endColIndex: Math.max(colIndex, activeCell.colIndex),
             }));
           }}
           onDoubleClick={() => {

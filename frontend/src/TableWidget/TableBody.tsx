@@ -86,31 +86,13 @@ export function TableBody({
     if (activeCell?.rowIndex === rowIndex && activeCell?.colIndex === colIndex)
       return "active";
 
-    if (selectedRange) {
-      const minRowIndex = Math.min(
-        selectedRange.startRowIndex,
-        selectedRange.endRowIndex
-      );
-      const maxRowIndex = Math.max(
-        selectedRange.startRowIndex,
-        selectedRange.endRowIndex
-      );
-      const minColIndex = Math.min(
-        selectedRange.startColIndex,
-        selectedRange.endColIndex
-      );
-      const maxColIndex = Math.max(
-        selectedRange.startColIndex,
-        selectedRange.endColIndex
-      );
-      if (
-        minRowIndex <= rowIndex &&
-        maxRowIndex >= rowIndex &&
-        minColIndex <= colIndex &&
-        maxColIndex >= colIndex
-      )
-        return "selected";
-    }
+    if (
+      selectedRange?.startRowIndex <= rowIndex &&
+      selectedRange?.endRowIndex >= rowIndex &&
+      selectedRange?.startColIndex <= colIndex &&
+      selectedRange?.endColIndex >= colIndex
+    )
+      return "selected";
 
     if (!isvalid) return "error";
     return "";
