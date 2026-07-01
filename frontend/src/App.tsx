@@ -12,6 +12,15 @@ function App() {
     { header: "Столбец_3", type: "text" },
     { header: "Столбец_4", type: "text" },
     { header: "Столбец_4", type: "text" },
+    { header: "Столбец_5", type: "number" },
+    { header: "Столбец_6", type: "text" },
+    { header: "Столбец_7", type: "text" },
+    { header: "Столбец_8", type: "text" },
+    { header: "Столбец_9", type: "text" },
+    { header: "Столбец_10", type: "number" },
+    { header: "Столбец_11", type: "text" },
+    { header: "Столбец_12", type: "text" },
+    { header: "Столбец_13", type: "text" },
   ];
   const tableRows = Array.from({ length: 50 }, () => ({
     values: Array(tableColumns.length).fill(""),

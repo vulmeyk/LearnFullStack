@@ -22,7 +22,7 @@ export function TableCell(
           defaultValue={value}
           autoFocus
           onBlur={(e) => {
-            console.log("save input");
+            // console.log("save input");
             const newRows = [...rows];
             newRows[rowIndex].values[colIndex] = e.target.value;
             setRows(newRows);

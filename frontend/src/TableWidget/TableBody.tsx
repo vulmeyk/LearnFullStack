@@ -47,14 +47,16 @@ export function TableBody({
             ...prev,
             rowIndex: Math.max(0, prev.rowIndex - 1),
           }));
-          setEditCell(null);
+
+          (document.activeElement as HTMLElement)?.blur();
           break;
+
         case "ArrowDown":
           setActiveCell((prev) => ({
             ...prev,
             rowIndex: Math.min(rows.length - 1, prev.rowIndex + 1),
           }));
-          setEditCell(null);
+          (document.activeElement as HTMLElement)?.blur();
           break;
 
         case "ArrowLeft":
@@ -62,7 +64,7 @@ export function TableBody({
             ...prev,
             colIndex: Math.max(0, prev.colIndex - 1),
           }));
-          setEditCell(null);
+          (document.activeElement as HTMLElement)?.blur();
           break;
 
         case "ArrowRight":
@@ -70,7 +72,7 @@ export function TableBody({
             ...prev,
             colIndex: Math.min(columns.length - 1, prev.colIndex + 1),
           }));
-          setEditCell(null);
+          (document.activeElement as HTMLElement)?.blur();
           break;
       }
     };
