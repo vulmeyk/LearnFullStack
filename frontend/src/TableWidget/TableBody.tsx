@@ -8,16 +8,35 @@ export function TableBody({
   setRows,
   activeCell,
   setActiveCell,
+  isSelecting,
+  selectedRange,
+  setSelectedRange,
 }) {
-  console.log("render body");
+  // console.log("render body");
   const [editCell, setEditCell] = useState<IndexCell | null>(null);
 
   useEffect(() => {
-    console.log("check activeCell and editCell");
+    // console.log("check mouse");
+    const handleMouseUp = () => {
+      isSelecting.current = false;
+    };
+
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    // console.log("check activeCell and editCell");
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!activeCell) return;
+
+      setSelectedRange(null);
+
       if (!editCell && e.key.length == 1) {
-        console.log("started input");
+        // console.log("started input");
         setEditCell(activeCell);
         return;
       }
@@ -67,6 +86,32 @@ export function TableBody({
     if (activeCell?.rowIndex === rowIndex && activeCell?.colIndex === colIndex)
       return "active";
 
+    if (selectedRange) {
+      const minRowIndex = Math.min(
+        selectedRange.startRowIndex,
+        selectedRange.endRowIndex
+      );
+      const maxRowIndex = Math.max(
+        selectedRange.startRowIndex,
+        selectedRange.endRowIndex
+      );
+      const minColIndex = Math.min(
+        selectedRange.startColIndex,
+        selectedRange.endColIndex
+      );
+      const maxColIndex = Math.max(
+        selectedRange.startColIndex,
+        selectedRange.endColIndex
+      );
+      if (
+        minRowIndex <= rowIndex &&
+        maxRowIndex >= rowIndex &&
+        minColIndex <= colIndex &&
+        maxColIndex >= colIndex
+      )
+        return "selected";
+    }
+
     if (!isvalid) return "error";
     return "";
   };
@@ -79,10 +124,13 @@ export function TableBody({
         rowIndex,
         colIndex,
         status,
+        activeCell,
         setActiveCell,
         setEditCell,
         rows,
-        setRows
+        setRows,
+        isSelecting,
+        setSelectedRange
       );
     })
   );

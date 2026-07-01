@@ -3,14 +3,17 @@ export function TableCell(
   rowIndex,
   colIndex,
   status,
+  activeCell,
   setActiveCell,
   setEditCell,
   rows,
-  setRows
+  setRows,
+  isSelecting,
+  setSelectedRange
 ) {
   switch (status) {
     case "edit":
-      console.log("render editCell");
+      // console.log("render editCell");
       return (
         <input
           key={`${rowIndex}-${colIndex}`}
@@ -29,20 +32,21 @@ export function TableCell(
       );
 
     case "active":
-      console.log("render activeCell");
+      // console.log("render activeCell");
       return (
         <div
           key={`${rowIndex}-${colIndex}`}
           className="cell"
           data-status={status}
           onDoubleClick={() => {
-            console.log("set edit");
+            // console.log("set edit");
             setEditCell({ rowIndex, colIndex });
           }}
         >
           {value}
         </div>
       );
+
     default:
       return (
         <div
@@ -50,8 +54,23 @@ export function TableCell(
           className="cell"
           data-status={status}
           onMouseDown={() => {
-            console.log("set active");
+            // console.log("set active");
             setActiveCell({ rowIndex, colIndex });
+            isSelecting.current = true;
+            setSelectedRange(null);
+          }}
+          onMouseEnter={() => {
+            if (!isSelecting.current) return;
+            setSelectedRange(() => ({
+              startRowIndex: activeCell.rowIndex,
+              startColIndex: activeCell.colIndex,
+              endRowIndex: rowIndex,
+              endColIndex: colIndex,
+            }));
+          }}
+          onDoubleClick={() => {
+            // console.log("set edit");
+            setEditCell({ rowIndex, colIndex });
           }}
         >
           {value}

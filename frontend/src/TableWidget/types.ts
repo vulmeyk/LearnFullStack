@@ -1,8 +1,8 @@
 export interface SelectedRange {
-  startRow: number;
-  startColumn: number;
-  endRow: number;
-  endColumn: number;
+  startRowIndex: number;
+  startColIndex: number;
+  endRowIndex: number;
+  endColIndex: number;
 }
 
 export interface Row {
