@@ -5,6 +5,7 @@ import "./TableWidget.css";
 import type { Row, IndexCell } from "./types";
 
 export default function TableWidget(props) {
+  console.log("               ");
   const [activeCell, setActiveCell] = useState<IndexCell | null>(null);
 
   const [rows, setRows] = useState<Row[]>(props.rows);
