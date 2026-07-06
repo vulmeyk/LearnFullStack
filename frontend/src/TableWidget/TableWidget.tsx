@@ -19,6 +19,7 @@ export default function TableWidget(props) {
     <div
       className="table"
       style={{ gridTemplateColumns: `repeat(${props.columns.length}, auto)` }}
+      onCopy={() => console.log("111")}
     >
       <TableHeader
         columns={props.columns}

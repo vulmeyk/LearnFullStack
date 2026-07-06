@@ -29,17 +29,12 @@ export function TableBody({
   }, []);
 
   useEffect(() => {
-    // console.log("check activeCell and editCell");
+    console.log("check activeCell and editCell");
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!activeCell) return;
+      if (e.ctrlKey || e.metaKey) return;
 
-      setSelectedRange(null);
-
-      if (!editCell && e.key.length == 1) {
-        // console.log("started input");
-        setEditCell(activeCell);
-        return;
-      }
+      console.log((e.ctrlKey || e.metaKey) && e.key === "c");
 
       switch (e.key) {
         case "ArrowUp":
@@ -74,6 +69,14 @@ export function TableBody({
           }));
           (document.activeElement as HTMLElement)?.blur();
           break;
+      }
+
+      setSelectedRange(null);
+
+      if (!editCell && e.key.length == 1) {
+        // console.log("started input");
+        setEditCell(activeCell);
+        return;
       }
     };
 
