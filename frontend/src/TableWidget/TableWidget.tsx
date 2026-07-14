@@ -2,24 +2,26 @@ import { useState, useRef } from "react";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
 import "./TableWidget.css";
-import type { Row, IndexCell, SelectedRange } from "./types";
+import type { TableWidgetProps, Row, CellIndex, SelectedRange } from "./types";
 
-export default function TableWidget(props) {
+export default function TableWidget(props: TableWidgetProps) {
   // console.log("               ");
-  const [activeCell, setActiveCell] = useState<IndexCell | null>(null);
+  const [activeCell, setActiveCell] = useState<CellIndex | null>(null);
   const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(
-    null
+    null,
   );
-
-  const isSelecting = useRef<Boolean>(false);
-
+  const isSelecting = useRef<boolean>(false);
   const [rows, setRows] = useState<Row[]>(props.rows);
+
+  const handleCopy = async () => {
+    console.log("copied");
+  };
 
   return (
     <div
       className="table"
       style={{ gridTemplateColumns: `repeat(${props.columns.length}, auto)` }}
-      onCopy={() => console.log("111")}
+      onCopy={handleCopy}
     >
       <TableHeader
         columns={props.columns}

@@ -1,24 +1,15 @@
 import { useEffect, useState } from "react";
 import { TableCell } from "./TableCell";
-import type { IndexCell } from "./types";
+import type { TableBodyProps, CellIndex } from "./types";
 
-export function TableBody({
-  columns,
-  rows,
-  setRows,
-  activeCell,
-  setActiveCell,
-  isSelecting,
-  selectedRange,
-  setSelectedRange,
-}) {
+export function TableBody(props: TableBodyProps) {
   // console.log("render body");
-  const [editCell, setEditCell] = useState<IndexCell | null>(null);
+  const [editCell, setEditCell] = useState<CellIndex | null>(null);
 
   useEffect(() => {
     // console.log("check mouse");
     const handleMouseUp = () => {
-      isSelecting.current = false;
+      props.isSelecting.current = false;
     };
 
     document.addEventListener("mouseup", handleMouseUp);
@@ -31,94 +22,112 @@ export function TableBody({
   useEffect(() => {
     console.log("check activeCell and editCell");
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!activeCell) return;
+      if (!props.activeCell) return;
       if (e.ctrlKey || e.metaKey) return;
 
-      console.log((e.ctrlKey || e.metaKey) && e.key === "c");
+      // console.log((e.ctrlKey || e.metaKey) && e.key === "c");
 
       switch (e.key) {
         case "ArrowUp":
-          setActiveCell((prev) => ({
-            ...prev,
-            rowIndex: Math.max(0, prev.rowIndex - 1),
-          }));
-
+          props.setActiveCell((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              rowIndex: Math.max(0, prev.rowIndex - 1),
+            };
+          });
           (document.activeElement as HTMLElement)?.blur();
           break;
 
         case "ArrowDown":
-          setActiveCell((prev) => ({
-            ...prev,
-            rowIndex: Math.min(rows.length - 1, prev.rowIndex + 1),
-          }));
+          props.setActiveCell((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              rowIndex: Math.min(props.rows.length - 1, prev.rowIndex + 1),
+            };
+          });
           (document.activeElement as HTMLElement)?.blur();
           break;
 
         case "ArrowLeft":
-          setActiveCell((prev) => ({
-            ...prev,
-            colIndex: Math.max(0, prev.colIndex - 1),
-          }));
+          props.setActiveCell((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              colIndex: Math.max(0, prev.colIndex - 1),
+            };
+          });
           (document.activeElement as HTMLElement)?.blur();
           break;
 
         case "ArrowRight":
-          setActiveCell((prev) => ({
-            ...prev,
-            colIndex: Math.min(columns.length - 1, prev.colIndex + 1),
-          }));
+          props.setActiveCell((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              colIndex: Math.min(props.columns.length - 1, prev.colIndex + 1),
+            };
+          });
           (document.activeElement as HTMLElement)?.blur();
           break;
       }
 
-      setSelectedRange(null);
+      props.setSelectedRange(null);
 
       if (!editCell && e.key.length == 1) {
         // console.log("started input");
-        setEditCell(activeCell);
+        setEditCell(props.activeCell);
         return;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeCell, editCell]);
+  }, [props.activeCell, editCell]);
 
-  const returnStatus = (rowIndex, colIndex, isvalid) => {
+  function returnStatus(rowIndex: number, colIndex: number, isvalid: boolean) {
     if (editCell?.rowIndex === rowIndex && editCell?.colIndex === colIndex)
       return "edit";
 
-    if (activeCell?.rowIndex === rowIndex && activeCell?.colIndex === colIndex)
+    if (
+      props.activeCell?.rowIndex === rowIndex &&
+      props.activeCell?.colIndex === colIndex
+    )
       return "active";
 
     if (
-      selectedRange?.startRowIndex <= rowIndex &&
-      selectedRange?.endRowIndex >= rowIndex &&
-      selectedRange?.startColIndex <= colIndex &&
-      selectedRange?.endColIndex >= colIndex
+      props.selectedRange &&
+      props.selectedRange.start.rowIndex <= rowIndex &&
+      props.selectedRange.end.rowIndex >= rowIndex &&
+      props.selectedRange.start.colIndex <= colIndex &&
+      props.selectedRange.end.colIndex >= colIndex
     )
       return "selected";
 
     if (!isvalid) return "error";
     return "";
-  };
+  }
 
-  return rows.map((row, rowIndex) =>
+  return props.rows.map((row, rowIndex) =>
     row.values.map((value, colIndex) => {
       const status = returnStatus(rowIndex, colIndex, row.valids[colIndex]);
-      return TableCell(
-        value,
-        rowIndex,
-        colIndex,
-        status,
-        activeCell,
-        setActiveCell,
-        setEditCell,
-        rows,
-        setRows,
-        isSelecting,
-        setSelectedRange
+      return (
+        <TableCell
+          key={`${rowIndex}-${colIndex}-${status}`}
+          value={value}
+          rowIndex={rowIndex}
+          colIndex={colIndex}
+          status={status}
+          activeCell={props.activeCell}
+          setActiveCell={props.setActiveCell}
+          setEditCell={setEditCell}
+          rows={props.rows}
+          setRows={props.setRows}
+          isSelecting={props.isSelecting}
+          setSelectedRange={props.setSelectedRange}
+        />
       );
-    })
+    }),
   );
 }

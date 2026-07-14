@@ -1,32 +1,21 @@
-export function TableCell(
-  value,
-  rowIndex,
-  colIndex,
-  status,
-  activeCell,
-  setActiveCell,
-  setEditCell,
-  rows,
-  setRows,
-  isSelecting,
-  setSelectedRange
-) {
-  switch (status) {
+import type { TableCellProps } from "./types";
+
+export function TableCell(props: TableCellProps) {
+  switch (props.status) {
     case "edit":
       // console.log("render editCell");
       return (
         <input
-          key={`${rowIndex}-${colIndex}`}
           className="cell"
-          data-status={status}
-          defaultValue={value}
+          data-status={props.status}
+          defaultValue={props.value}
           autoFocus
           onBlur={(e) => {
             // console.log("save input");
-            const newRows = [...rows];
-            newRows[rowIndex].values[colIndex] = e.target.value;
-            setRows(newRows);
-            setEditCell(null);
+            const newRows = [...props.rows];
+            newRows[props.rowIndex].values[props.colIndex] = e.target.value;
+            props.setRows(newRows);
+            props.setEditCell(null);
           }}
         ></input>
       );
@@ -35,45 +24,56 @@ export function TableCell(
       // console.log("render activeCell");
       return (
         <div
-          key={`${rowIndex}-${colIndex}`}
           className="cell"
-          data-status={status}
+          data-status={props.status}
           onDoubleClick={() => {
             // console.log("set edit");
-            setEditCell({ rowIndex, colIndex });
+            props.setEditCell({
+              rowIndex: props.rowIndex,
+              colIndex: props.colIndex,
+            });
           }}
         >
-          {value}
+          {props.value}
         </div>
       );
 
     default:
       return (
         <div
-          key={`${rowIndex}-${colIndex}`}
           className="cell"
-          data-status={status}
+          data-status={props.status}
           onMouseDown={() => {
             // console.log("set active");
-            setActiveCell({ rowIndex, colIndex });
-            isSelecting.current = true;
-            setSelectedRange(null);
+            props.setActiveCell({
+              rowIndex: props.rowIndex,
+              colIndex: props.colIndex,
+            });
+            props.isSelecting.current = true;
+            props.setSelectedRange(null);
           }}
           onMouseEnter={() => {
-            if (!isSelecting.current) return;
-            setSelectedRange(() => ({
-              startRowIndex: Math.min(rowIndex, activeCell.rowIndex),
-              startColIndex: Math.min(colIndex, activeCell.colIndex),
-              endRowIndex: Math.max(rowIndex, activeCell.rowIndex),
-              endColIndex: Math.max(colIndex, activeCell.colIndex),
-            }));
+            if (!props.isSelecting.current || !props.activeCell) return;
+            props.setSelectedRange({
+              start: {
+                rowIndex: Math.min(props.rowIndex, props.activeCell.rowIndex),
+                colIndex: Math.min(props.colIndex, props.activeCell.colIndex),
+              },
+              end: {
+                rowIndex: Math.max(props.rowIndex, props.activeCell.rowIndex),
+                colIndex: Math.max(props.colIndex, props.activeCell.colIndex),
+              },
+            });
           }}
           onDoubleClick={() => {
             // console.log("set edit");
-            setEditCell({ rowIndex, colIndex });
+            props.setEditCell({
+              rowIndex: props.rowIndex,
+              colIndex: props.colIndex,
+            });
           }}
         >
-          {value}
+          {props.value}
         </div>
       );
   }
