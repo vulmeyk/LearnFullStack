@@ -27,6 +27,7 @@ export type TableWidgetProps = {
 
 export type TableHeaderProps = {
   columns: Column[];
+  maxRowIndex: number;
   setActiveCell: Dispatch<SetStateAction<CellIndex | null>>;
   setSelectedRange: Dispatch<SetStateAction<SelectedRange | null>>;
 };
@@ -37,6 +38,8 @@ export type TableBodyProps = {
   setRows: Dispatch<SetStateAction<Row[]>>;
   activeCell: CellIndex | null;
   setActiveCell: Dispatch<SetStateAction<CellIndex | null>>;
+  editCell: CellIndex | null;
+  setEditCell: Dispatch<SetStateAction<CellIndex | null>>;
   isSelecting: RefObject<boolean>;
   selectedRange: SelectedRange | null;
   setSelectedRange: Dispatch<SetStateAction<SelectedRange | null>>;
@@ -47,11 +50,10 @@ export type TableCellProps = {
   rowIndex: number;
   colIndex: number;
   status: "" | "active" | "edit" | "selected" | "error";
-  activeCell: CellIndex | null;
+  activeCellRef: RefObject<CellIndex | null>;
+  isSelecting: RefObject<boolean>;
   setActiveCell: Dispatch<SetStateAction<CellIndex | null>>;
   setEditCell: Dispatch<SetStateAction<CellIndex | null>>;
-  rows: Row[];
   setRows: Dispatch<SetStateAction<Row[]>>;
-  isSelecting: RefObject<boolean>;
   setSelectedRange: Dispatch<SetStateAction<SelectedRange | null>>;
 };

@@ -4,6 +4,12 @@
   font-size: 14px;
   font-family: Arial, Helvetica, sans-serif;
   border: 2px solid #000000;
+  cursor: default;
+}
+
+.table *:not(input)::selection {
+  background: transparent;
+  color: inherit;
 }
 
 .header {

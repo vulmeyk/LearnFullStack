@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { TableCell } from "./TableCell";
-import type { TableBodyProps, CellIndex } from "./types";
+import type { TableBodyProps } from "./types";
 
 export function TableBody(props: TableBodyProps) {
   // console.log("render body");
-  const [editCell, setEditCell] = useState<CellIndex | null>(null);
+
+  const activeCellRef = useRef(props.activeCell);
+
+  activeCellRef.current = props.activeCell;
 
   useEffect(() => {
     // console.log("check mouse");
@@ -20,12 +23,10 @@ export function TableBody(props: TableBodyProps) {
   }, []);
 
   useEffect(() => {
-    console.log("check activeCell and editCell");
+    // console.log("check activeCell and editCell");
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!props.activeCell) return;
       if (e.ctrlKey || e.metaKey) return;
-
-      // console.log((e.ctrlKey || e.metaKey) && e.key === "c");
 
       switch (e.key) {
         case "ArrowUp":
@@ -75,19 +76,22 @@ export function TableBody(props: TableBodyProps) {
 
       props.setSelectedRange(null);
 
-      if (!editCell && e.key.length == 1) {
-        // console.log("started input");
-        setEditCell(props.activeCell);
+      if (!props.editCell && e.key.length == 1) {
+        // console.log("start input");
+        props.setEditCell(props.activeCell);
         return;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [props.activeCell, editCell]);
+  }, [props.activeCell, props.editCell]);
 
   function returnStatus(rowIndex: number, colIndex: number, isvalid: boolean) {
-    if (editCell?.rowIndex === rowIndex && editCell?.colIndex === colIndex)
+    if (
+      props.editCell?.rowIndex === rowIndex &&
+      props.editCell?.colIndex === colIndex
+    )
       return "edit";
 
     if (
@@ -114,17 +118,16 @@ export function TableBody(props: TableBodyProps) {
       const status = returnStatus(rowIndex, colIndex, row.valids[colIndex]);
       return (
         <TableCell
-          key={`${rowIndex}-${colIndex}-${status}`}
+          key={`${rowIndex}-${colIndex}`}
           value={value}
           rowIndex={rowIndex}
           colIndex={colIndex}
           status={status}
-          activeCell={props.activeCell}
-          setActiveCell={props.setActiveCell}
-          setEditCell={setEditCell}
-          rows={props.rows}
-          setRows={props.setRows}
+          activeCellRef={activeCellRef}
           isSelecting={props.isSelecting}
+          setActiveCell={props.setActiveCell}
+          setEditCell={props.setEditCell}
+          setRows={props.setRows}
           setSelectedRange={props.setSelectedRange}
         />
       );

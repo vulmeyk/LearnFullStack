@@ -11,7 +11,7 @@ export function TableHeader(props: TableHeaderProps) {
 
         props.setSelectedRange({
           start: { rowIndex: 0, colIndex: colIndex },
-          end: { rowIndex: Infinity, colIndex: colIndex },
+          end: { rowIndex: props.maxRowIndex, colIndex: colIndex },
         });
       }}
       onContextMenu={(e) => {
