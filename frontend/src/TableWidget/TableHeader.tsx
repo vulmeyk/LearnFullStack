@@ -1,16 +1,17 @@
-export function TableHeader({ columns, setActiveCell, setSelectedRange }) {
-  return columns.map((column, colIndex) => (
+import type { TableHeaderProps } from "./types";
+
+export function TableHeader(props: TableHeaderProps) {
+  return props.columns.map((column, colIndex) => (
     <div
       className="header"
       key={colIndex}
       onClick={() => {
         // console.log("click on header");
-        setActiveCell(null);
-        setSelectedRange({
-          startRowIndex: 0,
-          startColIndex: colIndex,
-          endRowIndex: Infinity,
-          endColIndex: colIndex,
+        props.setActiveCell(null);
+
+        props.setSelectedRange({
+          start: { rowIndex: 0, colIndex: colIndex },
+          end: { rowIndex: Infinity, colIndex: colIndex },
         });
       }}
       onContextMenu={(e) => {
