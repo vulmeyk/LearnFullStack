@@ -28,11 +28,11 @@
 }
 
 .cell[data-status="selected"] {
-  background: #ffa9a9;
+  background: #b8c5bb5b;
 }
 
 .cell[data-status="error"] {
-  background: #ec7878;
+  background: #ffa9a972;
 }
 
 input.cell {
