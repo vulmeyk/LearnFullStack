@@ -15,6 +15,12 @@ export type CellIndex = {
   colIndex: number;
 };
 
+export type EditCell = {
+  rowIndex: number;
+  colIndex: number;
+  value?: string;
+};
+
 export type SelectedRange = {
   start: CellIndex;
   end: CellIndex;
@@ -38,8 +44,8 @@ export type TableBodyProps = {
   setRows: Dispatch<SetStateAction<Row[]>>;
   activeCell: CellIndex | null;
   setActiveCell: Dispatch<SetStateAction<CellIndex | null>>;
-  editCell: CellIndex | null;
-  setEditCell: Dispatch<SetStateAction<CellIndex | null>>;
+  editCell: EditCell | null;
+  setEditCell: Dispatch<SetStateAction<EditCell | null>>;
   isSelecting: RefObject<boolean>;
   selectedRange: SelectedRange | null;
   setSelectedRange: Dispatch<SetStateAction<SelectedRange | null>>;
@@ -53,7 +59,7 @@ export type TableCellProps = {
   activeCellRef: RefObject<CellIndex | null>;
   isSelecting: RefObject<boolean>;
   setActiveCell: Dispatch<SetStateAction<CellIndex | null>>;
-  setEditCell: Dispatch<SetStateAction<CellIndex | null>>;
+  setEditCell: Dispatch<SetStateAction<EditCell | null>>;
   setRows: Dispatch<SetStateAction<Row[]>>;
   setSelectedRange: Dispatch<SetStateAction<SelectedRange | null>>;
 };

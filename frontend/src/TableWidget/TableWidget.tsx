@@ -2,12 +2,18 @@ import { useState, useRef } from "react";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
 import "./TableWidget.css";
-import type { TableWidgetProps, Row, CellIndex, SelectedRange } from "./types";
+import type {
+  TableWidgetProps,
+  Row,
+  CellIndex,
+  EditCell,
+  SelectedRange,
+} from "./types";
 
 export default function TableWidget(props: TableWidgetProps) {
   // console.log("               ");
   const [activeCell, setActiveCell] = useState<CellIndex | null>(null);
-  const [editCell, setEditCell] = useState<CellIndex | null>(null);
+  const [editCell, setEditCell] = useState<EditCell | null>(null);
   const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(
     null,
   );
@@ -15,13 +21,13 @@ export default function TableWidget(props: TableWidgetProps) {
   const [rows, setRows] = useState<Row[]>(props.rows);
 
   const handleCopy = (e: React.ClipboardEvent) => {
-    console.log("start copy");
+    // console.log("start copy");
     if (editCell) return;
 
-    let startRowIndex;
-    let endRowIndex;
-    let startColIndex;
-    let endColIndex;
+    let startRowIndex: number;
+    let endRowIndex: number;
+    let startColIndex: number;
+    let endColIndex: number;
 
     if (activeCell && !selectedRange) {
       startRowIndex = activeCell.rowIndex;
@@ -60,7 +66,7 @@ export default function TableWidget(props: TableWidgetProps) {
 
       clipboardData.setData("text/plain", plainText);
       clipboardData.setData("text/html", htmlText);
-      console.log("copied");
+      // console.log("copied");
     } else {
       console.error("copy error");
     }
