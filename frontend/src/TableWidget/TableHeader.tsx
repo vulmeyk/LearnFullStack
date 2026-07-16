@@ -16,7 +16,7 @@ export function TableHeader(props: TableHeaderProps) {
       }}
       onContextMenu={(e) => {
         e.preventDefault();
-        // console.log("ПКМ");
+        // console.log("start contextMenu");
       }}
     >
       {column["header"]}
