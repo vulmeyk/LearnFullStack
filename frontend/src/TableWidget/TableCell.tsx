@@ -4,89 +4,83 @@ import { memo } from "react";
 export const TableCell = memo(
   (props: TableCellProps) => {
     if (props.status == "edit") {
-      // console.log(`render editCell [${props.rowIndex}, ${props.colIndex}]`);
+      console.log(`render editCell [${props.rowIndex}, ${props.colIndex}]`);
+
       return (
         <input
           className="cell"
           data-status={props.status}
           defaultValue={props.value}
           autoFocus
-          onBlur={(e) => {
-            // console.log("save input");
-
-            props.setRows((prevRows) =>
-              prevRows.map((row, rIdx) => {
-                if (rIdx !== props.rowIndex) return row;
-                const newValues = [...row.values];
-                newValues[props.colIndex] = e.target.value;
-                return {
-                  ...row,
-                  values: newValues,
-                };
-              }),
-            );
-            props.setEditCell(null);
+          onChange={(e) => {
+            // console.log(e.target.value);
+            props.dispatch({
+              type: "NAVIGATE_CELLS",
+              payload: { editCellValue: e.target.value },
+            });
           }}
+          // onBlur={(e) => {
+          //   console.log("check");
+          //   props.dispatch({
+          //     type: "SAVE_INPUT",
+          //     payload: {
+          //       index: { rowIndex: props.rowIndex, colIndex: props.colIndex },
+          //       value: e.target.value,
+          //     },
+          //   });
+          // }}
         ></input>
       );
     }
 
     const handleDoubleClick = () => {
-      // console.log("set edit");
-      props.setEditCell({
-        rowIndex: props.rowIndex,
-        colIndex: props.colIndex,
-        value: props.value,
-      });
-    };
-
-    const handleMouseEnter = () => {
-      const startCell = props.activeCellRef.current;
-      if (!props.isSelecting.current || !startCell) return;
-      props.setSelectedRange({
-        start: {
-          rowIndex: Math.min(props.rowIndex, startCell.rowIndex),
-          colIndex: Math.min(props.colIndex, startCell.colIndex),
-        },
-        end: {
-          rowIndex: Math.max(props.rowIndex, startCell.rowIndex),
-          colIndex: Math.max(props.colIndex, startCell.colIndex),
+      console.log("set edit");
+      props.dispatch({
+        type: "NAVIGATE_CELLS",
+        payload: {
+          editCellIndex: {
+            rowIndex: props.rowIndex,
+            colIndex: props.colIndex,
+          },
+          isSelecting: true,
         },
       });
     };
 
-    if (props.status == "active") {
-      // console.log(`render activeCell [${props.rowIndex}, ${props.colIndex}]`);
-      return (
-        <div
-          className="cell"
-          data-status={props.status}
-          onDoubleClick={handleDoubleClick}
-          onMouseDown={() => {
-            props.isSelecting.current = true;
-            props.setSelectedRange(null);
-          }}
-          onMouseEnter={handleMouseEnter}
-        >
-          {props.value}
-        </div>
-      );
-    }
+    const handleMouseDows = () => {
+      props.dispatch({
+        type: "NAVIGATE_CELLS",
+        payload: {
+          activeCell: {
+            rowIndex: props.rowIndex,
+            colIndex: props.colIndex,
+          },
+          isSelecting: true,
+        },
+      });
+    };
 
-    // console.log(`render defaultCell [${props.rowIndex}, ${props.colIndex}]`);
+    const handleMouseEnter = (e: React.MouseEvent) => {
+      if (e.buttons !== 1) return;
+      props.dispatch({
+        type: "NAVIGATE_CELLS",
+        payload: {
+          farCell: {
+            rowIndex: props.rowIndex,
+            colIndex: props.colIndex,
+          },
+        },
+      });
+    };
+
+    console.log(
+      `render ${props.status}Cell [${props.rowIndex}, ${props.colIndex}]`,
+    );
     return (
       <div
         className="cell"
         data-status={props.status}
-        onMouseDown={() => {
-          // console.log("click on defaultCell");
-          props.setActiveCell({
-            rowIndex: props.rowIndex,
-            colIndex: props.colIndex,
-          });
-          props.isSelecting.current = true;
-          props.setSelectedRange(null);
-        }}
+        onMouseDown={handleMouseDows}
         onMouseEnter={handleMouseEnter}
         onDoubleClick={handleDoubleClick}
       >

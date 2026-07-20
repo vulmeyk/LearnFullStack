@@ -1,133 +1,118 @@
-import { useState, useRef } from "react";
+import { useReducer } from "react";
+import { tableReducer } from "./TableState";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
 import "./TableWidget.css";
-import type {
-  TableWidgetProps,
-  Row,
-  CellIndex,
-  EditCell,
-  SelectedRange,
-} from "./types";
+import type { TableWidgetProps } from "./types";
 
 export default function TableWidget(props: TableWidgetProps) {
-  // console.log("               ");
-  const [activeCell, setActiveCell] = useState<CellIndex | null>(null);
-  const [editCell, setEditCell] = useState<EditCell | null>(null);
-  const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(
-    null,
-  );
-  const isSelecting = useRef<boolean>(false);
-  const [rows, setRows] = useState<Row[]>(props.rows);
+  console.log("               ");
+  const [state, dispatch] = useReducer(tableReducer, {
+    activeCell: null,
+    editCell: null,
 
-  const handleCopy = (e: React.ClipboardEvent) => {
-    // console.log("start copy");
-    if (editCell) return;
+    selectedRange: null,
+    rows: props.rows,
+  });
 
-    let startRowIndex: number;
-    let endRowIndex: number;
-    let startColIndex: number;
-    let endColIndex: number;
+  const { rows } = state;
 
-    if (activeCell && !selectedRange) {
-      startRowIndex = activeCell.rowIndex;
-      endRowIndex = activeCell.rowIndex;
-      startColIndex = activeCell.colIndex;
-      endColIndex = activeCell.colIndex;
-    } else if (selectedRange) {
-      startRowIndex = selectedRange.start.rowIndex;
-      endRowIndex = selectedRange.end.rowIndex;
-      startColIndex = selectedRange.start.colIndex;
-      endColIndex = selectedRange.end.colIndex;
-    } else return;
+  // const handleCopy = (e: React.ClipboardEvent) => {
+  //   // console.log("start copy");
+  //   if (editCell) return;
 
-    let plainTextRows = [];
-    let htmlTextRows = [];
+  //   let startRowIndex: number;
+  //   let endRowIndex: number;
+  //   let startColIndex: number;
+  //   let endColIndex: number;
 
-    for (let r = startRowIndex; r <= endRowIndex; r++) {
-      let plainTextRow = [];
-      let htmlTextRow = [];
+  //   if (activeCell && !selectedRange) {
+  //     startRowIndex = activeCell.rowIndex;
+  //     endRowIndex = activeCell.rowIndex;
+  //     startColIndex = activeCell.colIndex;
+  //     endColIndex = activeCell.colIndex;
+  //   } else if (selectedRange) {
+  //     startRowIndex = selectedRange.start.rowIndex;
+  //     endRowIndex = selectedRange.end.rowIndex;
+  //     startColIndex = selectedRange.start.colIndex;
+  //     endColIndex = selectedRange.end.colIndex;
+  //   } else return;
 
-      for (let c = startColIndex; c <= endColIndex; c++) {
-        plainTextRow.push(rows[r].values[c] ?? "");
-        htmlTextRow.push(`<td>${rows[r].values[c] ?? ""}</td>`);
-      }
-      plainTextRows.push(plainTextRow.join("\t"));
-      htmlTextRows.push(`<tr>${htmlTextRow.join("")}</tr>`);
-    }
+  //   let plainTextRows = [];
+  //   let htmlTextRows = [];
 
-    let plainText = plainTextRows.join("\n");
-    let htmlText = `<table>${htmlTextRows.join("")}</table>`;
+  //   for (let r = startRowIndex; r <= endRowIndex; r++) {
+  //     let plainTextRow = [];
+  //     let htmlTextRow = [];
 
-    const clipboardData = e.clipboardData;
+  //     for (let c = startColIndex; c <= endColIndex; c++) {
+  //       plainTextRow.push(rows[r].values[c] ?? "");
+  //       htmlTextRow.push(`<td>${rows[r].values[c] ?? ""}</td>`);
+  //     }
+  //     plainTextRows.push(plainTextRow.join("\t"));
+  //     htmlTextRows.push(`<tr>${htmlTextRow.join("")}</tr>`);
+  //   }
 
-    if (clipboardData) {
-      e.preventDefault();
+  //   let plainText = plainTextRows.join("\n");
+  //   let htmlText = `<table>${htmlTextRows.join("")}</table>`;
 
-      clipboardData.setData("text/plain", plainText);
-      clipboardData.setData("text/html", htmlText);
-      // console.log("copied");
-    } else {
-      console.error("copy error");
-    }
-  };
+  //   const clipboardData = e.clipboardData;
 
-  const handlePaste = (e: React.ClipboardEvent) => {
-    // console.log("start paste");
-    if (!activeCell) return;
+  //   if (clipboardData) {
+  //     e.preventDefault();
 
-    e.preventDefault();
+  //     clipboardData.setData("text/plain", plainText);
+  //     clipboardData.setData("text/html", htmlText);
+  //     // console.log("copied");
+  //   } else {
+  //     console.error("copy error");
+  //   }
+  // };
 
-    const plainText = e.clipboardData.getData("text/plain");
+  // const handlePaste = (e: React.ClipboardEvent) => {
+  //   // console.log("start paste");
+  //   if (!activeCell) return;
 
-    if (!plainText) return;
+  //   e.preventDefault();
 
-    setRows((prevRows) => {
-      const newRows = prevRows.map((row: Row) => ({
-        values: [...row.values],
-        valids: [...row.valids],
-      }));
+  //   const plainText = e.clipboardData.getData("text/plain");
 
-      plainText.split("\n").forEach((rowString: string, rowIndex: number) => {
-        const targetRowIndex = activeCell.rowIndex + rowIndex;
-        if (targetRowIndex >= props.rows.length) return;
-        rowString.split("\t").forEach((cellValue: string, colIndex: number) => {
-          const targetColIndex = activeCell.colIndex + colIndex;
-          if (targetColIndex >= props.columns.length) return;
-          newRows[targetRowIndex].values[targetColIndex] = cellValue;
-          newRows[targetRowIndex].valids[targetColIndex] = true;
-        });
-      });
-      return newRows;
-    });
-    // console.log("pasted");
-  };
+  //   if (!plainText) return;
+
+  //   setRows((prevRows) => {
+  //     const newRows = prevRows.map((row: Row) => ({
+  //       values: [...row.values],
+  //       valids: [...row.valids],
+  //     }));
+
+  //     plainText.split("\n").forEach((rowString: string, rowIndex: number) => {
+  //       const targetRowIndex = activeCell.rowIndex + rowIndex;
+  //       if (targetRowIndex >= props.rows.length) return;
+  //       rowString.split("\t").forEach((cellValue: string, colIndex: number) => {
+  //         const targetColIndex = activeCell.colIndex + colIndex;
+  //         if (targetColIndex >= props.columns.length) return;
+  //         newRows[targetRowIndex].values[targetColIndex] = cellValue;
+  //         newRows[targetRowIndex].valids[targetColIndex] = true;
+  //       });
+  //     });
+  //     return newRows;
+  //   });
+  //   // console.log("pasted");
+  // };
   return (
     <div
       className="table"
       tabIndex={0}
       style={{ gridTemplateColumns: `repeat(${props.columns.length}, auto)` }}
-      onCopy={handleCopy}
-      onPaste={handlePaste}
+      // onCopy={handleCopy}
+      // onPaste={handlePaste}
     >
       <TableHeader
         columns={props.columns}
+        dispatch={dispatch}
         maxRowIndex={rows.length - 1}
-        setActiveCell={setActiveCell}
-        setSelectedRange={setSelectedRange}
       />
-      <TableBody
-        columns={props.columns}
-        rows={rows}
-        setRows={setRows}
-        activeCell={activeCell}
-        setActiveCell={setActiveCell}
-        editCell={editCell}
-        setEditCell={setEditCell}
-        isSelecting={isSelecting}
-        selectedRange={selectedRange}
-        setSelectedRange={setSelectedRange}
-      />
+      <TableBody columns={props.columns} state={state} dispatch={dispatch} />
     </div>
   );
 }

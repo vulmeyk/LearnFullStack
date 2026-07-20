@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction, RefObject } from "react";
+import type { Dispatch } from "react";
 
 export type Row = {
   values: string[];
@@ -34,32 +34,49 @@ export type TableWidgetProps = {
 export type TableHeaderProps = {
   columns: Column[];
   maxRowIndex: number;
-  setActiveCell: Dispatch<SetStateAction<CellIndex | null>>;
-  setSelectedRange: Dispatch<SetStateAction<SelectedRange | null>>;
+  dispatch: Dispatch<TableAction>;
 };
 
 export type TableBodyProps = {
   columns: Column[];
-  rows: Row[];
-  setRows: Dispatch<SetStateAction<Row[]>>;
-  activeCell: CellIndex | null;
-  setActiveCell: Dispatch<SetStateAction<CellIndex | null>>;
-  editCell: EditCell | null;
-  setEditCell: Dispatch<SetStateAction<EditCell | null>>;
-  isSelecting: RefObject<boolean>;
-  selectedRange: SelectedRange | null;
-  setSelectedRange: Dispatch<SetStateAction<SelectedRange | null>>;
+  state: TableState;
+  dispatch: Dispatch<TableAction>;
 };
 
 export type TableCellProps = {
   value: string;
   rowIndex: number;
   colIndex: number;
-  status: "" | "active" | "edit" | "selected" | "error";
-  activeCellRef: RefObject<CellIndex | null>;
-  isSelecting: RefObject<boolean>;
-  setActiveCell: Dispatch<SetStateAction<CellIndex | null>>;
-  setEditCell: Dispatch<SetStateAction<EditCell | null>>;
-  setRows: Dispatch<SetStateAction<Row[]>>;
-  setSelectedRange: Dispatch<SetStateAction<SelectedRange | null>>;
+  status: "default" | "active" | "edit" | "selected" | "error";
+  dispatch: Dispatch<TableAction>;
 };
+
+export type TableState = {
+  activeCell: CellIndex | null;
+  editCell: EditCell | null;
+  selectedRange: SelectedRange | null;
+  rows: Row[];
+};
+
+export type TableAction =
+  | {
+      type: "NAVIGATE_CELLS";
+      payload: {
+        activeCell?: CellIndex;
+        editCellIndex?: CellIndex | null;
+        editCellValue?: string;
+        isSelecting?: boolean;
+        farCell?: CellIndex;
+        moveActiveCell?: CellIndex;
+      };
+    }
+  | {
+      type: "SAVE_INPUT";
+      payload: {
+        index: CellIndex;
+        value: string;
+      };
+    }
+  | {
+      type: "CLEAR_CELLS";
+    };
