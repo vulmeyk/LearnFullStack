@@ -7,14 +7,14 @@ export function TableBody(props: TableBodyProps) {
 
   const { activeCell, selectedRange } = props.state;
 
-  const editCellRef = useRef(activeCell);
-  editCellRef.current = activeCell;
+  const isEditCellRef = useRef(false);
+  isEditCellRef.current = activeCell?.editingValue != null;
 
   useEffect(() => {
     // console.log("check window");
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) return;
-      const isEdit = editCellRef.current?.editingValue != null;
+      const isEditCell = isEditCellRef.current;
 
       switch (e.key) {
         case "ArrowUp":
@@ -76,7 +76,7 @@ export function TableBody(props: TableBodyProps) {
 
         case "Delete":
         case "Backspace":
-          if (isEdit) return;
+          if (isEditCell) return;
           e.preventDefault();
           props.dispatch({
             type: "CLEAR_CELLS",
@@ -96,7 +96,7 @@ export function TableBody(props: TableBodyProps) {
 
         //   break;
       }
-      if (e.key.length == 1 && !isEdit) {
+      if (e.key.length == 1 && !isEditCell) {
         e.preventDefault();
 
         props.dispatch({
