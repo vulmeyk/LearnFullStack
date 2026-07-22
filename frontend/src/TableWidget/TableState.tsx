@@ -128,6 +128,44 @@ export function tableReducer(
         selectedRange: null,
       };
     }
+    case "PASTE_CELLS": {
+      // console.log("start paste");
+      if (state.activeCell?.editingValue !== null) return state;
+      const activeCell = state.activeCell;
+
+      const plainText = action.payload.plainText;
+      if (!plainText) return state;
+
+      const newRows = [...state.rows];
+
+      const maxRowIndex = state.rows.length - 1;
+      const maxColIndex = state.rows[0].values.length - 1;
+
+      plainText.split("\n").forEach((rowString, rowOffset) => {
+        const targetRowIndex = activeCell.rowIndex + rowOffset;
+        if (targetRowIndex > maxRowIndex) return;
+
+        if (newRows[targetRowIndex] === state.rows[targetRowIndex]) {
+          newRows[targetRowIndex] = {
+            values: [...state.rows[targetRowIndex].values],
+            valids: [...state.rows[targetRowIndex].valids],
+          };
+        }
+
+        rowString.split("\t").forEach((cellValue, colOffset) => {
+          const targetColIndex = activeCell.colIndex + colOffset;
+          if (targetColIndex > maxColIndex) return;
+
+          newRows[targetRowIndex].values[targetColIndex] = cellValue;
+          newRows[targetRowIndex].valids[targetColIndex] = true;
+        });
+      });
+
+      return {
+        ...state,
+        rows: newRows,
+      };
+    }
 
     default:
       return state;

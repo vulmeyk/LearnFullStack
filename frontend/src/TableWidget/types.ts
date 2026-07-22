@@ -68,4 +68,8 @@ export type TableAction =
     }
   | {
       type: "CLEAR_CELLS";
+    }
+  | {
+      type: "PASTE_CELLS";
+      payload: { plainText: string };
     };
