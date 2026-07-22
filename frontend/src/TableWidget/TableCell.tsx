@@ -3,65 +3,59 @@ import { memo } from "react";
 
 export const TableCell = memo(
   (props: TableCellProps) => {
-    if (props.status == "edit") {
-      console.log(`render editCell [${props.rowIndex}, ${props.colIndex}]`);
+    if (props.status === "edit") {
+      // console.log(`render editCell [${props.rowIndex}, ${props.colIndex}]`);
 
       return (
         <input
           className="cell"
           data-status={props.status}
-          defaultValue={props.value}
+          value={props.value}
           autoFocus
           onChange={(e) => {
-            // console.log(e.target.value);
             props.dispatch({
               type: "NAVIGATE_CELLS",
-              payload: { editCellValue: e.target.value },
+              payload: { updateActiveCell: { editingValue: e.target.value } },
             });
           }}
-          // onBlur={(e) => {
-          //   console.log("check");
-          //   props.dispatch({
-          //     type: "SAVE_INPUT",
-          //     payload: {
-          //       index: { rowIndex: props.rowIndex, colIndex: props.colIndex },
-          //       value: e.target.value,
-          //     },
-          //   });
-          // }}
         ></input>
       );
     }
 
     const handleDoubleClick = () => {
-      console.log("set edit");
+      // console.log("doubleclick on cell");
       props.dispatch({
         type: "NAVIGATE_CELLS",
         payload: {
-          editCellIndex: {
+          updateActiveCell: {
             rowIndex: props.rowIndex,
             colIndex: props.colIndex,
+            editingValue: props.value,
           },
-          isSelecting: true,
         },
       });
     };
 
-    const handleMouseDows = () => {
+    const handleMouseDow = () => {
+      if (props.status === "active" || props.status === "edit") {
+        return;
+      }
+      // console.log("click on cell");
       props.dispatch({
         type: "NAVIGATE_CELLS",
         payload: {
-          activeCell: {
+          updateActiveCell: {
             rowIndex: props.rowIndex,
             colIndex: props.colIndex,
+            editingValue: null,
           },
-          isSelecting: true,
         },
       });
     };
 
     const handleMouseEnter = (e: React.MouseEvent) => {
       if (e.buttons !== 1) return;
+      // console.log("move across body");
       props.dispatch({
         type: "NAVIGATE_CELLS",
         payload: {
@@ -73,14 +67,14 @@ export const TableCell = memo(
       });
     };
 
-    console.log(
-      `render ${props.status}Cell [${props.rowIndex}, ${props.colIndex}]`,
-    );
+    // console.log(
+    //   `render ${props.status}Cell [${props.rowIndex}, ${props.colIndex}]`,
+    // );
     return (
       <div
         className="cell"
         data-status={props.status}
-        onMouseDown={handleMouseDows}
+        onMouseDown={handleMouseDow}
         onMouseEnter={handleMouseEnter}
         onDoubleClick={handleDoubleClick}
       >

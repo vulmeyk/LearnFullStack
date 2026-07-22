@@ -3,18 +3,18 @@ import { TableCell } from "./TableCell";
 import type { TableBodyProps } from "./types";
 
 export function TableBody(props: TableBodyProps) {
-  console.log("render body");
+  // console.log("render body");
 
-  const { activeCell, editCell, selectedRange } = props.state;
+  const { activeCell, selectedRange } = props.state;
 
-  const editCellRef = useRef(editCell);
-  editCellRef.current = editCell;
+  const editCellRef = useRef(activeCell);
+  editCellRef.current = activeCell;
 
   useEffect(() => {
-    console.log("check window");
+    // console.log("check window");
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) return;
-      const currentEdit = editCellRef.current;
+      const isEdit = editCellRef.current?.editingValue != null;
 
       switch (e.key) {
         case "ArrowUp":
@@ -76,35 +76,33 @@ export function TableBody(props: TableBodyProps) {
 
         case "Delete":
         case "Backspace":
-          if (currentEdit) return;
+          if (isEdit) return;
           e.preventDefault();
           props.dispatch({
             type: "CLEAR_CELLS",
           });
           break;
 
-        case "Escape":
-          e.preventDefault();
+        // case "Escape":
+        //   if (!isEdit) return;
+        //   e.preventDefault();
 
-          props.dispatch({
-            type: "NAVIGATE_CELLS",
-            payload: {
-              editCellIndex: null,
-              editCellValue: "",
-            },
-          });
+        //   props.dispatch({
+        //     type: "NAVIGATE_CELLS",
+        //     payload: {
+        //       updateActiveCell: { editingValue: null },
+        //     },
+        //   });
 
-          break;
+        //   break;
       }
-
-      if (e.key.length == 1 && !currentEdit) {
-        // console.log("start input");
+      if (e.key.length == 1 && !isEdit) {
         e.preventDefault();
 
         props.dispatch({
           type: "NAVIGATE_CELLS",
           payload: {
-            editCellValue: e.key,
+            updateActiveCell: { editingValue: e.key },
           },
         });
         return;
@@ -116,10 +114,14 @@ export function TableBody(props: TableBodyProps) {
   }, []);
 
   function returnStatus(rowIndex: number, colIndex: number, isvalid: boolean) {
-    if (editCell?.rowIndex === rowIndex && editCell?.colIndex === colIndex)
+    if (
+      activeCell?.rowIndex === rowIndex &&
+      activeCell.colIndex === colIndex &&
+      activeCell.editingValue !== null
+    )
       return "edit";
 
-    if (activeCell?.rowIndex === rowIndex && activeCell?.colIndex === colIndex)
+    if (activeCell?.rowIndex === rowIndex && activeCell.colIndex === colIndex)
       return "active";
 
     if (
@@ -139,8 +141,8 @@ export function TableBody(props: TableBodyProps) {
     row.values.map((value, colIndex) => {
       const status = returnStatus(rowIndex, colIndex, row.valids[colIndex]);
       const cellValue =
-        status === "edit" && editCell?.value !== undefined
-          ? editCell.value
+        status === "edit" && activeCell?.editingValue != null
+          ? activeCell.editingValue
           : value;
       return (
         <TableCell

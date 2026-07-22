@@ -15,10 +15,10 @@ export type CellIndex = {
   colIndex: number;
 };
 
-export type EditCell = {
+export type ActiveCell = {
   rowIndex: number;
   colIndex: number;
-  value?: string;
+  editingValue: string | null;
 };
 
 export type SelectedRange = {
@@ -52,8 +52,7 @@ export type TableCellProps = {
 };
 
 export type TableState = {
-  activeCell: CellIndex | null;
-  editCell: EditCell | null;
+  activeCell: ActiveCell | null;
   selectedRange: SelectedRange | null;
   rows: Row[];
 };
@@ -62,19 +61,9 @@ export type TableAction =
   | {
       type: "NAVIGATE_CELLS";
       payload: {
-        activeCell?: CellIndex;
-        editCellIndex?: CellIndex | null;
-        editCellValue?: string;
-        isSelecting?: boolean;
+        updateActiveCell?: Partial<ActiveCell> | null;
         farCell?: CellIndex;
         moveActiveCell?: CellIndex;
-      };
-    }
-  | {
-      type: "SAVE_INPUT";
-      payload: {
-        index: CellIndex;
-        value: string;
       };
     }
   | {

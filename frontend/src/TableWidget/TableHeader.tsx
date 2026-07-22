@@ -6,8 +6,11 @@ export function TableHeader(props: TableHeaderProps) {
     props.dispatch({
       type: "NAVIGATE_CELLS",
       payload: {
-        isSelecting: true,
-        activeCell: { rowIndex, colIndex },
+        updateActiveCell: {
+          rowIndex: rowIndex,
+          colIndex: colIndex,
+          editingValue: null,
+        },
         farCell: { rowIndex: props.maxRowIndex, colIndex: colIndex },
       },
     });

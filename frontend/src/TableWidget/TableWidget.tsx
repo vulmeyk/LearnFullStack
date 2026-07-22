@@ -6,11 +6,9 @@ import "./TableWidget.css";
 import type { TableWidgetProps } from "./types";
 
 export default function TableWidget(props: TableWidgetProps) {
-  console.log("               ");
+  // console.log("               ");
   const [state, dispatch] = useReducer(tableReducer, {
     activeCell: null,
-    editCell: null,
-
     selectedRange: null,
     rows: props.rows,
   });
